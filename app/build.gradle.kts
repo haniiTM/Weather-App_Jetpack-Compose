@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.com.intellij.openapi.util.NotNullLazyValue
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
@@ -51,6 +53,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.volley)
+    implementation(libs.coil.compose)
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

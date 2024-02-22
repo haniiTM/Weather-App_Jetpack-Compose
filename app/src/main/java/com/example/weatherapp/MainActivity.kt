@@ -1,46 +1,44 @@
 package com.example.weatherapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.android.volley.Request.Method
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.example.weatherapp.screens.MainScreen
+import org.json.JSONObject
+
+const val API_KEY = "8062d461d3d74c9dafe144513242002"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WeatherAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
+            MainScreen(this)
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun getCityData(context: Context, city: String, data: (String) -> Unit) {
+    val url = "https://api.weatherapi.com/v1/current.json" +
+            "?key=$API_KEY" +
+            "&q=$city" +
+            "&aqi=no"
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WeatherAppTheme {
-        Greeting("Android")
-    }
+    val request = StringRequest(Method.GET, url,
+        {
+            val json = JSONObject(it)
+            val currentJSON = json.getJSONObject("current")
+            val temp = currentJSON.getString("temp_c")
+
+            data(temp)
+        },
+        {
+            data("Error!")
+        })
+
+    val queue = Volley.newRequestQueue(context)
+    queue.add(request)
 }
