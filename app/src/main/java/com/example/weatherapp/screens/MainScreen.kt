@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -74,7 +77,7 @@ fun MainScreen(context: Context = MainActivity()) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = "Jun 2022 / 10:30")
+                            Text(text = "Jun 2022 / 10:30", color = Color.White)
                             AsyncImage(
                                 model = "https://cdn.weatherapi.com/weather/64x64/day/116.png",
                                 contentDescription = "weatherIcon",
@@ -87,17 +90,31 @@ fun MainScreen(context: Context = MainActivity()) {
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = "Alicante")
-                            Text(text = "25", fontSize = 35.sp)
-                            Text(text = "Partly cloudy")
-                            Text(text = "28/21")
+                            Text(text = "Alicante", color = Color.White, fontSize = 24.sp)
+                            Text(text = "25", fontSize = 65.sp, color = Color.White)
+                            Text(text = "Partly cloudy", color = Color.White)
+                            Text(text = "28/21", color = Color.White)
                         }
 
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_search),
+                                    contentDescription = "search",
+                                    tint = Color.White
+                                )
+                            }
 
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_sync),
+                                    contentDescription = "search",
+                                    tint = Color.White
+                                )
+                            }
                         }
                     }
                 }
