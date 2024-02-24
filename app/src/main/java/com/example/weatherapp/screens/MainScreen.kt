@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -27,6 +27,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.weatherapp.MainActivity
 import com.example.weatherapp.R
+import com.example.weatherapp.data.WeatherModel
+import com.example.weatherapp.getCityData
 import com.example.weatherapp.ui.theme.BlueLight
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import kotlinx.coroutines.launch
@@ -54,7 +57,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(context: Context = MainActivity()) {
     val cityName = "London"
     var cityData by remember {
-        mutableStateOf("")
+        mutableStateOf(listOf<WeatherModel>())
     }
 
     WeatherAppTheme(darkTheme = false) {
@@ -62,6 +65,13 @@ fun MainScreen(context: Context = MainActivity()) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+
+            LaunchedEffect(key1 = Unit) {
+                getCityData(context, cityName) {
+                    cityData = it
+                }
+            }
+
             Image(
                 painter = painterResource(id = R.drawable.weather_bg),
                 contentDescription = "background",
@@ -72,21 +82,22 @@ fun MainScreen(context: Context = MainActivity()) {
             )
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
             ) {
-                MainCard()
-                TabLayout()
+                if (cityData.isNotEmpty()) {
+                    MainCard(model = cityData.first())
+                    TabLayout(models = cityData)
+                }
             }
         }
     }
 }
 
 @Composable
-fun MainCard() {
+fun MainCard(model: WeatherModel) {
     Card(
         colors = CardDefaults.cardColors(BlueLight),
         modifier = Modifier
@@ -95,15 +106,16 @@ fun MainCard() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(8.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Jun 2022 / 10:30", color = Color.White)
+                Text(text = model.time, color = Color.White)
+
                 AsyncImage(
-                    model = "https://cdn.weatherapi.com/weather/64x64/day/116.png",
+                    model = "https:${model.icon}",
                     contentDescription = "weatherIcon",
                     modifier = Modifier.size(35.dp)
                 )
@@ -114,10 +126,10 @@ fun MainCard() {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Alicante", color = Color.White, fontSize = 24.sp)
-                Text(text = "25", fontSize = 65.sp, color = Color.White)
-                Text(text = "Partly cloudy", color = Color.White)
-                Text(text = "28/21", color = Color.White)
+                Text(text = model.city, color = Color.White, fontSize = 24.sp)
+                Text(text = model.curTemp, fontSize = 65.sp, color = Color.White)
+                Text(text = model.condition, color = Color.White)
+                Text(text = "?/?C", color = Color.White)
             }
 
             Row(
@@ -146,15 +158,18 @@ fun MainCard() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TabLayout() {
+fun TabLayout(models: List<WeatherModel>) {
     val tabList = listOf("HOURS", "DAYS")
-    var pagerState = rememberPagerState {
+    val pagerState = rememberPagerState {
         tabList.size
     }
-    var tabIndex = pagerState.currentPage
-    var coroutineScope = rememberCoroutineScope()
+    val tabIndex = pagerState.currentPage
+    val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.clip(RoundedCornerShape(5.dp))) {
+    Column(
+        modifier = Modifier.clip(RoundedCornerShape(5.dp)),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         TabRow(
             selectedTabIndex = tabIndex,
             containerColor = BlueLight,
@@ -176,7 +191,41 @@ fun TabLayout() {
         }
 
         HorizontalPager(state = pagerState) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(models) {
+                    ListItem(item = it)
+                }
+            }
+        }
+    }
+}
 
+@Composable
+fun ListItem(item: WeatherModel) {
+    Card(colors = CardDefaults.cardColors(BlueLight)) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Column {
+                Text(text = item.time)
+                Text(text = item.condition, color = Color.White)
+            }
+
+            Text(
+                text = item.curTemp.ifEmpty { "${item.minTemp}/${item.maxTemp}C" },
+                color = Color.White,
+                fontSize = 25.sp
+            )
+
+            AsyncImage(
+                model = "https:${item.icon}",
+                contentDescription = "weatherIcon",
+                modifier = Modifier.size(35.dp)
+            )
         }
     }
 }
