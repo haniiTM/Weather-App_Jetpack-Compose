@@ -46,7 +46,7 @@ fun getCityData(context: Context, city: String, data: (List<WeatherModel>) -> Un
 }
 
 fun getWeatherByDays(data: String): List<WeatherModel> {
-    if (data.isEmpty()) return listOf()
+    data.ifEmpty { return listOf() }
 
     val obj = JSONObject(data)
     val models = arrayListOf<WeatherModel>()
@@ -83,7 +83,16 @@ fun getWeatherByDays(data: String): List<WeatherModel> {
         val hours = forecastday.getJSONArray("hour").toString()
 
 //        model
-        val model = WeatherModel("", date, "", text, icon, maxtemp_c.toString(), mintemp_c.toString(), hours)
+        val model = WeatherModel(
+            "",
+            date,
+            "",
+            text,
+            icon,
+            maxtemp_c.toString(),
+            mintemp_c.toString(),
+            hours
+        )
         models.add(model)
     }
 
@@ -92,7 +101,7 @@ fun getWeatherByDays(data: String): List<WeatherModel> {
 }
 
 fun getWeatherByHours(data: String): List<WeatherModel> {
-    if (data.isEmpty()) return listOf()
+    data.ifEmpty { return listOf() }
 
     val models = ArrayList<WeatherModel>()
     val hours = JSONArray(data)
