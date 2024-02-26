@@ -84,7 +84,7 @@ fun getWeatherByDays(data: String): List<WeatherModel> {
 
 //        model
         val model = WeatherModel(
-            "",
+            name,
             date,
             "",
             text,
@@ -96,7 +96,7 @@ fun getWeatherByDays(data: String): List<WeatherModel> {
         models.add(model)
     }
 
-    models[0] = models[0].copy(city = name, time = last_updated, curTemp = temp_c.toString())
+    models[0] = models[0].copy(time = last_updated, curTemp = temp_c.toString())
     return models
 }
 
@@ -110,7 +110,7 @@ fun getWeatherByHours(data: String): List<WeatherModel> {
         val hour = hours[i] as JSONObject
 
         val time = hour.getString("time")
-        val temp_c = hour.getString("temp_c")
+        val temp_c = hour.getInt("temp_c")
 
 //        condition
         val condition = hour.getJSONObject("condition")
@@ -118,7 +118,7 @@ fun getWeatherByHours(data: String): List<WeatherModel> {
         val icon = condition.getString("icon")
 
 //        model
-        val model = WeatherModel("", time, temp_c, text, icon, "", "", "")
+        val model = WeatherModel("", time, temp_c.toString(), text, icon, "", "", "")
         models.add(model)
     }
 
