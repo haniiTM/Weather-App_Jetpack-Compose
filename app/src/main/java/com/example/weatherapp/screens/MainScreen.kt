@@ -3,6 +3,7 @@ package com.example.weatherapp.screens
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -127,9 +128,9 @@ fun MainCard(model: WeatherModel) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = model.city, color = Color.White, fontSize = 24.sp)
-                Text(text = model.curTemp, fontSize = 65.sp, color = Color.White)
+                Text(text = model.curTemp + "C", fontSize = 65.sp, color = Color.White)
                 Text(text = model.condition, color = Color.White)
-                Text(text = "?/?C", color = Color.White)
+                Text(text = "${model.minTemp}/${model.maxTemp}C", color = Color.White)
             }
 
             Row(
@@ -202,7 +203,7 @@ fun TabLayout(models: List<WeatherModel>) {
 
 @Composable
 fun ListItem(item: WeatherModel) {
-    Card(colors = CardDefaults.cardColors(BlueLight)) {
+    Card(colors = CardDefaults.cardColors(BlueLight), modifier = Modifier.clickable {  }) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

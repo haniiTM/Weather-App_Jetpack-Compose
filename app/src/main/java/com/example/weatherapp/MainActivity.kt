@@ -47,6 +47,7 @@ fun getCityData(context: Context, city: String, data: (List<WeatherModel>) -> Un
 
 fun getWeatherByDays(data: String): List<WeatherModel> {
     if (data.isEmpty()) return listOf()
+
     val obj = JSONObject(data)
     val models = arrayListOf<WeatherModel>()
 
@@ -58,7 +59,7 @@ fun getWeatherByDays(data: String): List<WeatherModel> {
 //    current
     val current = obj.getJSONObject("current")
     val last_updated = current.getString("last_updated")
-    val temp_c = current.getString("temp_c")
+    val temp_c = current.getInt("temp_c")
 
 //    forecast
     val forecast = obj.getJSONObject("forecast")
@@ -70,8 +71,8 @@ fun getWeatherByDays(data: String): List<WeatherModel> {
 
 //        day
         val day = forecastday.getJSONObject("day")
-        val maxtemp_c = day.getString("maxtemp_c")
-        val mintemp_c = day.getString("mintemp_c")
+        val maxtemp_c = day.getInt("maxtemp_c")
+        val mintemp_c = day.getInt("mintemp_c")
 
 ///        condition
         val condition = day.getJSONObject("condition")
@@ -82,11 +83,11 @@ fun getWeatherByDays(data: String): List<WeatherModel> {
         val hours = forecastday.getJSONArray("hour").toString()
 
 //        model
-        val model = WeatherModel("", date, "", text, icon, maxtemp_c, mintemp_c, hours)
+        val model = WeatherModel("", date, "", text, icon, maxtemp_c.toString(), mintemp_c.toString(), hours)
         models.add(model)
     }
 
-    models[0] = models[0].copy(city = name, time = last_updated, curTemp = temp_c + "C")
+    models[0] = models[0].copy(city = name, time = last_updated, curTemp = temp_c.toString())
     return models
 }
 
